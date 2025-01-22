@@ -3,7 +3,11 @@ import { singlePostQuery } from "@/sanity/lib/queries";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-const PostPage = async ({ params }: Promise<{ slug: string }>) => {
+type PostPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+const PostPage = async ({ params }: PostPageProps) => {
   const { data: post } = await sanityFetch({
     query: singlePostQuery,
     params: await params,
