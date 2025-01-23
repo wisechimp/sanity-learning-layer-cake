@@ -282,7 +282,7 @@ export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/sanity/lib/queries.ts
 // Variable: allPostsQuery
-// Query: *[_type == "post" && defined(slug.current)]    {      _id, title, slug, body, mainImage, publishedAt, "categories": coalesce(        categories[]->{          _id,          slug,          title        },        author->{          name, image        }      )    }
+// Query: *[_type == "post" && defined(slug.current)]|order(publishedAt desc)    {      _id, title, slug, body, mainImage, publishedAt,      "categories": coalesce(        categories[]->{          _id,          slug,          title        }, []),        author->{          name, image        }    }
 export type AllPostsQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -334,7 +334,8 @@ export type AllPostsQueryResult = Array<{
     _id: string;
     slug: Slug | null;
     title: string | null;
-  }> | {
+  }> | Array<never>;
+  author: {
     name: string | null;
     image: {
       asset?: {
@@ -426,7 +427,7 @@ export type SinglePostQueryResult = {
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "\n    *[_type == \"post\" && defined(slug.current)]\n    {\n      _id, title, slug, body, mainImage, publishedAt, \"categories\": coalesce(\n        categories[]->{\n          _id,\n          slug,\n          title\n        },\n        author->{\n          name, image\n        }\n      )\n    }": AllPostsQueryResult;
+    "\n    *[_type == \"post\" && defined(slug.current)]|order(publishedAt desc)\n    {\n      _id, title, slug, body, mainImage, publishedAt,\n      \"categories\": coalesce(\n        categories[]->{\n          _id,\n          slug,\n          title\n        }, []),\n        author->{\n          name, image\n        }\n    }": AllPostsQueryResult;
     "*[_type == \"post\" && defined(slug.current)]{\n  \"slug\": slug.current\n  }": PostSlugQueryResult;
     "\n    *[_type == \"post\" && slug.current == $slug][0]\n    {\n      title, body, mainImage, publishedAt,\n      \"categories\": coalesce(\n        categories[]->{\n          _id,\n          slug,\n          title\n        },[]\n      ),\n      author->{\n        name, image\n      }\n    }": SinglePostQueryResult;
   }
